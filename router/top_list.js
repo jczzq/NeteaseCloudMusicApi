@@ -20,23 +20,18 @@ const top_list_all = {
   "18": ["中国嘻哈榜", "1899724"],
   "19": ["法国 NRJ EuroHot 30周榜", "27135204"],
   "20": ["台湾Hito排行榜", "112463"],
-  "21": ["Beatport全球电子舞曲榜", "3812895"]
+  "21": ["Beatport全球电子舞曲榜", "3812895"],
+  "22": ["云音乐ACG音乐榜", "71385702"],
+  "23": ["云音乐嘻哈榜", "991319590"]
 };
-const express = require("express");
-const router = express();
-const { createWebAPIRequest } = require("../util/util");
-
-router.get("/", (req, res) => {
+module.exports = (req, res, createWebAPIRequest, request) => {
   const idx = req.query.idx;
   const id = top_list_all[idx][1];
   const cookie = req.get("Cookie") ? req.get("Cookie") : "";
   const action = "/weapi/v3/playlist/detail";
   const data = {
     id,
-    limit: req.query.limit || 30,
-    offset: req.query.limit || 0,
-    total: true,
-    n: 1000,
+    n: 10000,
     csrf_token: ""
   };
   createWebAPIRequest(
@@ -47,10 +42,10 @@ router.get("/", (req, res) => {
     cookie,
     music_req => {
       res.setHeader("Content-Type", "application/json");
+      // console.log(JSON.parse(music_req).playlist.tracks.length)
+      // console.log(JSON.parse(music_req).playlist.trackIds.length)
       res.send(music_req);
     },
     err => res.status(502).send("fetch error")
   );
-});
-
-module.exports = router;
+};
